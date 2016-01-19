@@ -3,10 +3,11 @@
 ''' **************************************************************** '''
 
 import math
+import matplotlib.pyplot as plt
 
 ''' **************************************************************** '''
 
-el_count = 1000 # количество элементов
+el_count = 100 # количество элементов
 
 cable_len = 100 # длина кабеля, метры
 
@@ -20,48 +21,64 @@ ro = 1025 # плотность воды
 
 Vb = 1.5 # скорость течения (уточнить - скорость потока относительно кабеля это, а не течение) 
 
-Gk = 0 # остаточная плавучесть? проверить!
+Gk = 0 # остаточная плавучесть
+
+
+
+
+# массивы координат элементов
+
+# прямой
+x_k = list(range(0, el_count + 1))
+y_k = list(range(0, el_count + 1))
+z_k = list(range(0, el_count + 1))
+
+# обратный
+x_kn = list(range(0, el_count + 1))
+y_kn = list(range(0, el_count + 1))
+z_kn = list(range(0, el_count + 1))
 
 ''' **************************************************************** '''
 
 def static():
+	
+	global el_count
+	global cable_len
+	global Ckt
+	global Ckn
+	global Dk
+	global ro
+	global Vb
+	global Gk
 
-	# массивы координат элементов
 
-	# прямой
-	x_k = list(range(0, el_count + 1))
-	y_k = list(range(0, el_count + 1))
-	z_k = list(range(0, el_count + 1))
+	global x_k
+	global y_k
+	global z_k
 
-	# обратный
-	x_kn = list(range(0, el_count + 1))
-	y_kn = list(range(0, el_count + 1))
-	z_kn = list(range(0, el_count + 1))
 
 	# длина одного элемента
 	''' dbl_dLk  '''
 	el_len = cable_len / el_count
 
-	# суммарные силы по осям - должны получать от аппарата
+	# суммарные силы по осям от аппарата (с учётом гидродинамики и плавучести)
 	Fx = 100
-	Fy = 0
+	Fy = 500
 	Fz = 0
 
 	# начальные координаты
-	''' в программе почему-то c единицы - base 1 в бейсике - проверить '''
 	x_k[0] = 0
 	y_k[0] = 0
 	z_k[0] = 0
-
-	# только для отладки
-	a = 5
-
+	
 	# номер текущего отрезка
 	''' int_numLk '''
 	cur_pos = 1
 
 	while True:
 	
+		#print(cur_pos)
+		
 		# 1 
 	
 		# результирующая сила - модуль
@@ -81,9 +98,9 @@ def static():
 		z_k[cur_pos] = z_k[cur_pos - 1] - el_len * Cos_Az
 	
 		# 3
-	
+		
+		# знак направления
 		if Cos_Ax >= 0:
-			# знак направления
 			''' int_modCax '''
 			mod_cax = 1
 		else:
@@ -124,7 +141,8 @@ def static():
 		cur_pos += 1	# счётчик
 	
 		# условие выхода из цикла
-		if cur_pos == el_count + 2:
+		''' if cur_pos == el_count + 2: '''
+		if cur_pos == el_count + 1:
 			break
 		
 		####
@@ -135,7 +153,37 @@ def static():
 	
 ''' **************************************************************** '''
 
-# для запуска из скрипта
+def visual():
+	
+	'''
+	http://nbviewer.ipython.org/github/whitehorn/Scientific_graphics_in_python/blob/master/P1%20Chapter%201%20Pyplot.ipynb
+	'''
+	
+	global x_k
+	global y_k
+	global z_k
+	
+	
+	
+	fig = plt.figure()   # Создание объекта Figure
+	
+	#plt.scatter(1.0, 1.0)   # scatter - метод для нанесения маркера в точке (1.0, 1.0)  
+	
+	#print (fig.axes)  
+	
+	#plt.savefig('fig1')
+	
+	for i in range(0,len(x_k)):
+		
+		plt.scatter(x_k[i], y_k[i])
+		
+	plt.show()
+
+''' **************************************************************** '''
+
+# для запуска из консоли
 if __name__ == '__main__':
 	
 	static()
+	
+	visual()
